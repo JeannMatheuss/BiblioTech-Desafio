@@ -1,21 +1,40 @@
 package com.example.LiterAlura.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "livros")
 public class Livro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
     private String nomeAutor;
     private String idioma;
     private int numeroDeDownloads;
 
-    public Livro(Long id, String titulo, String nomeAutor, String idioma, int numeroDeDownloads) {
-        this.id = id;
-        this.titulo = titulo;
-        this.nomeAutor = nomeAutor;
-        this.idioma = idioma;
-        this.numeroDeDownloads = numeroDeDownloads;
+    public Livro() {
     }
+
+    public Livro(DadosLivro dadosLivro) {
+        this.titulo = dadosLivro.titulo();
+
+        if (dadosLivro.authors() != null && !dadosLivro.authors().isEmpty()) {
+            this.nomeAutor = dadosLivro.authors().get(0).nome();
+        } else {
+            this.nomeAutor = "Autor desconhecido";
+        }
+
+        if (dadosLivro.idiomas() != null && !dadosLivro.idiomas().isEmpty()) {
+            this.idioma = dadosLivro.idiomas().get(0);  // pega o primeiro idioma
+        } else {
+            this.idioma = "Idioma desconhecido";
+        }
+
+        this.numeroDeDownloads = dadosLivro.numeroDeDownloads();
+    }
+
 
     public Long getId() {
         return id;
