@@ -3,6 +3,7 @@ package com.example.LiterAlura.principal;
 import com.example.LiterAlura.model.DadosLivro;
 import com.example.LiterAlura.model.DadosResultado;
 import com.example.LiterAlura.model.Livro;
+import com.example.LiterAlura.repository.AutorRepository;
 import com.example.LiterAlura.repository.LivroRepository;
 import com.example.LiterAlura.service.ConsumoApi;
 import com.example.LiterAlura.service.ConverteDados;
@@ -13,16 +14,20 @@ import java.util.Scanner;
 
 public class Principal {
     private Scanner leitura = new Scanner(System.in);
+    private final LivroRepository livroRepository;
+    private final AutorRepository autorRepository;
+
     private ConsumoApi consumoApi = new ConsumoApi();
     private ConverteDados conversor = new ConverteDados();
     private final String ENDERECO = "https://gutendex.com/books/?search=";
 
-    private LivroRepository repositorio;
+    //private LivroRepository repositorio;
 
     List<Livro> livros = new ArrayList<>();
 
-    public Principal(LivroRepository repositorio) {
-        this.repositorio = repositorio;
+    public Principal(LivroRepository livroRepository, AutorRepository autorRepository) {
+        this.livroRepository = livroRepository;
+        this.autorRepository = autorRepository;
     }
 
     public void exibeMenu() {
@@ -76,7 +81,7 @@ public class Principal {
         }
 
         Livro livro = new Livro(dadosLivro);
-        repositorio.save(livro);
+        livroRepository.save(livro);
         System.out.println("Livro salvo com sucesso: " + livro.getTitulo());
 
     }
@@ -98,14 +103,43 @@ public class Principal {
     }
 
     private void listarLivrosRegistrados() {
+        List<Livro> livros = livroRepository.findAll();
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro registrado.");
+        } else {
+            livros.forEach(System.out::println);
+        }
     }
 
     private void listarAutoresRegistrados() {
+        var autores = autorRepository.findAll();
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor registrado.");
+        } else {
+            autores.forEach(System.out::println);
+        }
     }
 
     private void listarAutoresVivosPorAno() {
+        System.out.print("Digite o ano: ");
+        int ano = leitura.nextInt();
+        leitura.nextLine();
+        var autores = autorRepository.findByAnoNascimentoLessThanEqualAndAnoFalecimentoGreaterThanEqual(ano, ano);
+        if (autores.isEmpty()) {
+            System.out.println("Nenhum autor encontrado vivo em " + ano);
+        } else {
+            autores.forEach(System.out::println);
+        }
     }
 
     private void listarLivrosPorIdioma() {
+        System.out.print("Digite o idioma (ex: 'en', 'pt', 'fr'): ");
+        String idioma = leitura.nextLine();
+        var livros = livroRepository.findByIdioma(idioma);
+        if (livros.isEmpty()) {
+            System.out.println("Nenhum livro encontrado no idioma: " + idioma);
+        } else {
+            livros.forEach(System.out::println);
+        }
     }
 }
