@@ -1,8 +1,6 @@
 package com.example.LiterAlura.principal;
 
-import com.example.LiterAlura.model.DadosLivro;
-import com.example.LiterAlura.model.DadosResultado;
-import com.example.LiterAlura.model.Livro;
+import com.example.LiterAlura.model.*;
 import com.example.LiterAlura.repository.AutorRepository;
 import com.example.LiterAlura.repository.LivroRepository;
 import com.example.LiterAlura.service.ConsumoApi;
@@ -80,10 +78,26 @@ public class Principal {
             return;
         }
 
-        Livro livro = new Livro(dadosLivro);
-        livroRepository.save(livro);
-        System.out.println("Livro salvo com sucesso: " + livro.getTitulo());
+        Autor autor;
+        if (dadosLivro.authors() != null && !dadosLivro.authors().isEmpty()) {
+            String nomeAutor = dadosLivro.authors().get(0).nome();
+            DadosAutor dadosAutor = dadosLivro.authors().get(0);
 
+            autor = autorRepository.findByNome(nomeAutor)
+                    .orElseGet(() -> {
+                        Autor novoAutor = new Autor(dadosAutor.nome(), dadosAutor.anoNascimento(), dadosAutor.anoFalecimento());
+                        return autorRepository.save(novoAutor);
+                    });
+
+        } else {
+            autor = autorRepository.findByNome("Autor desconhecido")
+                    .orElseGet(() -> autorRepository.save(new Autor("Autor desconhecido")));
+        }
+
+        Livro livro = new Livro(dadosLivro, autor);
+        livroRepository.save(livro);
+
+        System.out.println("Livro salvo com sucesso: " + livro.getTitulo());
     }
 
     private DadosLivro getDadosLivro() {
@@ -124,7 +138,7 @@ public class Principal {
         System.out.print("Digite o ano: ");
         int ano = leitura.nextInt();
         leitura.nextLine();
-        var autores = autorRepository.findByAnoNascimentoLessThanEqualAndAnoFalecimentoGreaterThanEqual(ano, ano);
+        var autores = autorRepository.autoresVivosEm(ano);
         if (autores.isEmpty()) {
             System.out.println("Nenhum autor encontrado vivo em " + ano);
         } else {

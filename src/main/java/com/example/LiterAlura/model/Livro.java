@@ -10,30 +10,31 @@ public class Livro {
     private Long id;
 
     private String titulo;
-    private String nomeAutor;
     private String idioma;
     private int numeroDeDownloads;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
+
+
 
     public Livro() {
     }
 
-    public Livro(DadosLivro dadosLivro) {
+    public Livro(DadosLivro dadosLivro, Autor autor) {
         this.titulo = dadosLivro.titulo();
 
-        if (dadosLivro.authors() != null && !dadosLivro.authors().isEmpty()) {
-            this.nomeAutor = dadosLivro.authors().get(0).nome();
-        } else {
-            this.nomeAutor = "Autor desconhecido";
-        }
-
         if (dadosLivro.idiomas() != null && !dadosLivro.idiomas().isEmpty()) {
-            this.idioma = dadosLivro.idiomas().get(0);  // pega o primeiro idioma
+            this.idioma = dadosLivro.idiomas().get(0);
         } else {
             this.idioma = "Idioma desconhecido";
         }
 
         this.numeroDeDownloads = dadosLivro.numeroDeDownloads();
+        this.autor = autor; // atribuindo o objeto Autor
     }
+
 
 
     public Long getId() {
@@ -52,12 +53,12 @@ public class Livro {
         this.titulo = titulo;
     }
 
-    public String getNomeAutor() {
-        return nomeAutor;
+    public Autor getAutor() {
+        return autor;
     }
 
-    public void setNomeAutor(String nomeAutor) {
-        this.nomeAutor = nomeAutor;
+    public void setAutor(Autor autor) {
+        this.autor = autor;
     }
 
     public String getIdioma() {
@@ -78,10 +79,10 @@ public class Livro {
 
     @Override
     public String toString() {
-        return
-                "Titulo= " + titulo + '\'' +
-                ", Nome do Autor= " + nomeAutor + '\'' +
-                ", idioma= " + idioma + '\'' +
+        return "Titulo= " + titulo +
+                ", Nome do Autor= " + (autor != null ? autor.getNome() : "Desconhecido") +
+                ", idioma= " + idioma +
                 ", Numero De Downloads= " + numeroDeDownloads;
     }
+
 }
