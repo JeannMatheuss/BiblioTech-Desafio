@@ -1,6 +1,6 @@
-# 📚 LiterAlura
+# 📚 BiblioTech
 
-O **LiterAlura** é uma aplicação em **Java + Spring Boot + JPA + PostgreSQL** que consome a API do [Gutendex](https://gutendex.com/) para buscar informações sobre livros e autores.  
+O **BiblioTech** é uma aplicação em **Java + Spring Boot + JPA + PostgreSQL** que consome a API do [Gutendex](https://gutendex.com/) para buscar informações sobre livros e autores.  
 A aplicação permite armazenar, consultar e listar dados de livros e autores em um banco de dados relacional.
 
 ---
